@@ -521,7 +521,21 @@ class TestEnvironmentVariables:
         assert app.AUDIENCE == "custom-api"
         assert app.ISSUER == "https://custom-keycloak.com/realms/custom-realm"
         assert (
-            app.JWKS_URL
+    def test_custom_environment_values(self, monkeypatch):
+        """Test that custom environment values are used."""
+        monkeypatch.setenv("KC_URL", "https://custom-keycloak.com")
+        monkeypatch.setenv("KC_REALM", "custom-realm")
+        monkeypatch.setenv("KC_AUDIENCE", "custom-api")
+        # Import app after patching environment variables
+        import importlib
+        app_mod = importlib.import_module("app")
+
+        assert app_mod.KC_URL == "https://custom-keycloak.com"
+        assert app_mod.REALM == "custom-realm"
+        assert app_mod.AUDIENCE == "custom-api"
+        assert app_mod.ISSUER == "https://custom-keycloak.com/realms/custom-realm"
+        assert (
+            app_mod.JWKS_URL
             == "https://custom-keycloak.com/realms/custom-realm/protocol/openid-connect/certs"
         )
 
