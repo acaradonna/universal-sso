@@ -50,7 +50,6 @@ beforeAll(() => {
 afterAll(() => {
   console.error = originalConsoleError // eslint-disable-line no-console
 })
-
 // Handle unhandled promise rejections during tests
 if (typeof process !== 'undefined') {
   process.on('unhandledRejection', () => {
