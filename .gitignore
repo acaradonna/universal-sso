@@ -124,3 +124,6 @@ temp/
 # Downloaded binaries
 gh_*.tar.gz
 gh_*/
+
+# GitHub Copilot Code folder
+.gh-copilot/
