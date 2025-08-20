@@ -1,0 +1,74 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: change_me_db
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak -d keycloak"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0
+    command: ["start-dev"]
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://db:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: change_me_db
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: change_me_admin
+      KC_HOSTNAME_STRICT: "false"     # dev only, remove in prod
+      KC_HTTP_ENABLED: "true"         # dev only (use HTTPS in prod)
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./keycloak/theme:/opt/keycloak/themes:ro
+      - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
+
+  # Optional: simple reverse proxy with automatic TLS for production/dev convenience
+  caddy:
+    image: caddy:2
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./reverse-proxy/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+    depends_on:
+      - keycloak
+      - api
+      - web
+
+  web:
+    build: ./web
+    depends_on:
+      - keycloak
+    ports:
+      - "5173:5173"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+
+  api:
+    build: ./api
+    depends_on:
+      - keycloak
+    ports:
+      - "5000:5000"
+    environment:
+      - KC_URL=http://keycloak:8080
+      - KC_REALM=universal
+      - KC_AUDIENCE=api
+
+volumes:
+  db_data:

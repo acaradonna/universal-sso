@@ -1,0 +1,15 @@
+{
+  email you@example.com
+}
+
+auth.example.com {
+  reverse_proxy keycloak:8080
+}
+
+api.example.com {
+  reverse_proxy api:5000
+}
+
+app.example.com {
+  reverse_proxy web:5173
+}
