@@ -1,6 +1,22 @@
 FROM python:3.11-slim
+
 WORKDIR /app
-COPY . /app
-RUN python -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt
+
+# Copy requirements first for better caching
+COPY requirements.txt .
+
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy source code
+COPY . .
+
+# Create non-root user for security
+RUN adduser --disabled-password --gecos '' appuser && chown -R appuser:appuser /app
+USER appuser
+
+# Expose port
 EXPOSE 5000
-CMD ["sh", "-c", ". .venv/bin/activate && python app.py"]
+
+# Run the application
+CMD ["python", "app.py"]
