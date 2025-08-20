@@ -60,7 +60,6 @@ if (typeof process !== 'undefined') {
   window.addEventListener('unhandledrejection', (event) => {
     event.preventDefault()
   })
-}
 
 // Reset all mocks before each test
 beforeEach(() => {
