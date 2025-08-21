@@ -520,7 +520,6 @@ class TestEnvironmentVariables:
         assert app.REALM == "custom-realm"
         assert app.AUDIENCE == "custom-api"
         assert app.ISSUER == "https://custom-keycloak.com/realms/custom-realm"
-        assert (
     def test_custom_environment_values(self, monkeypatch):
         """Test that custom environment values are used."""
         monkeypatch.setenv("KC_URL", "https://custom-keycloak.com")
