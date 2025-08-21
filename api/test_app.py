@@ -2,6 +2,7 @@ import json
 from unittest.mock import Mock, patch
 
 import pytest
+import requests
 import responses
 from authlib.jose import JsonWebKey, jwt
 
@@ -44,7 +45,7 @@ class TestJWKSCache:
         # Clear cache
         app._jwks = None
 
-        with pytest.raises(Exception):
+        with pytest.raises(requests.exceptions.HTTPError):
             get_jwks()
 
     @responses.activate
@@ -509,8 +510,8 @@ class TestEnvironmentVariables:
             "KC_AUDIENCE": "custom-api",
         },
     )
-    def test_custom_environment_values(self):
-        """Test that custom environment values are used."""
+    def test_custom_environment_values_patch_dict(self):
+        """Test that custom environment values are used with patch.dict."""
         # Need to reload the module to pick up new env vars
         import importlib
 
@@ -520,21 +521,8 @@ class TestEnvironmentVariables:
         assert app.REALM == "custom-realm"
         assert app.AUDIENCE == "custom-api"
         assert app.ISSUER == "https://custom-keycloak.com/realms/custom-realm"
-    def test_custom_environment_values_monkeypatch(self, monkeypatch):
-        """Test that custom environment values are used."""
-        monkeypatch.setenv("KC_URL", "https://custom-keycloak.com")
-        monkeypatch.setenv("KC_REALM", "custom-realm")
-        monkeypatch.setenv("KC_AUDIENCE", "custom-api")
-        # Import app after patching environment variables
-        import importlib
-        app_mod = importlib.import_module("app")
-
-        assert app_mod.KC_URL == "https://custom-keycloak.com"
-        assert app_mod.REALM == "custom-realm"
-        assert app_mod.AUDIENCE == "custom-api"
-        assert app_mod.ISSUER == "https://custom-keycloak.com/realms/custom-realm"
         assert (
-            app_mod.JWKS_URL
+            app.JWKS_URL
             == "https://custom-keycloak.com/realms/custom-realm/protocol/openid-connect/certs"
         )
 

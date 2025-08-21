@@ -31,35 +31,6 @@ vi.mock('import.meta', () => ({
   }
 }), { hoisted: true })
 
-// Handle unhandled promise rejections in tests
-const originalConsoleError = console.error // eslint-disable-line no-console
-beforeAll(() => {
-  console.error = (...args) => { // eslint-disable-line no-console
-    if (
-      typeof args[0] === 'string' &&
-      (args[0].includes('Warning: ReactDOM.render is deprecated') ||
-       args[0].includes('Warning: An update to') ||
-       args[0].includes('act(...)'))
-    ) {
-      return
-    }
-    originalConsoleError.call(console, ...args)
-  }
-})
-
-afterAll(() => {
-  console.error = originalConsoleError // eslint-disable-line no-console
-})
-// Handle unhandled promise rejections during tests
-if (typeof process !== 'undefined') {
-  process.on('unhandledRejection', () => {
-    // Suppress unhandled rejections during tests
-  })
-} else if (typeof window !== 'undefined') {
-  window.addEventListener('unhandledrejection', (event) => {
-    event.preventDefault()
-  })
-
 // Reset all mocks before each test
 beforeEach(() => {
   vi.clearAllMocks()
