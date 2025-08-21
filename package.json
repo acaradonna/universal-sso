@@ -1,0 +1,33 @@
+{
+  "name": "universal-sso",
+  "private": true,
+  "description": "Universal Single Sign-On demonstration with Keycloak, Flask API, and React frontend",
+  "scripts": {
+    "test": "npm run test:api && npm run test:web",
+    "test:api": "cd api && python3 -m pytest -v",
+    "test:web": "cd web && npm run test:run",
+    "test:quick": "cd api && python3 -m pytest --quiet && cd ../web && npm run test:run --reporter=basic",
+    "test:coverage": "npm run test:coverage:api && npm run test:coverage:web",
+    "test:coverage:api": "cd api && python3 -m pytest --cov=. --cov-report=html --cov-report=term",
+    "test:coverage:web": "cd web && npm run coverage",
+    "lint": "npm run lint:api && npm run lint:web",
+    "lint:api": "cd api && python3 -m flake8 . && python3 -m black --check . && python3 -m isort --check-only .",
+    "lint:web": "cd web && npm run lint",
+    "fix": "npm run fix:api && npm run fix:web",
+    "fix:api": "cd api && python3 -m black . && python3 -m isort .",
+    "fix:web": "cd web && npm run lint:fix",
+    "install:all": "npm run install:api && npm run install:web",
+    "install:api": "cd api && pip install -r requirements.txt",
+    "install:web": "cd web && npm install",
+    "clean": "cd api && rm -rf .pytest_cache __pycache__ htmlcov .coverage && cd ../web && rm -rf coverage node_modules/.cache",
+    "dev:api": "cd api && python app.py",
+    "dev:web": "cd web && npm run dev",
+    "build:web": "cd web && npm run build"
+  },
+  "workspaces": [
+    "web"
+  ],
+  "keywords": ["sso", "keycloak", "oauth2", "oidc", "flask", "react"],
+  "author": "acaradonna",
+  "license": "MIT"
+}

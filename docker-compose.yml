@@ -35,7 +35,6 @@ services:
       - "8080:8080"
     volumes:
       - ./keycloak/theme:/opt/keycloak/themes:ro
-      - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
 
   # Optional: simple reverse proxy with automatic TLS for production/dev convenience
   caddy:
